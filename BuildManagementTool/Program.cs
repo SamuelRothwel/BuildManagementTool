@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 static List<String> GetBinPaths(String repoPath)
 {
@@ -55,9 +56,30 @@ static List<String> ExistingBinBuilds(String backupPath)
     return output;
 }
 
-static void MainMenu()
+static void CopyIntoDirectory(String inpDir, String outDir)
 {
-    Console.WriteLine();
+    if (!Directory.Exists(outDir))
+    {
+        Directory.CreateDirectory(outDir);
+    }
+
+    string[] files = Directory.GetFiles(inpDir);
+
+    foreach (string file in files)
+    {
+        string fileName = Path.GetFileName(file);
+
+        string destinationFilePath = Path.Combine(outDir, fileName);
+        
+        File.Copy(file, destinationFilePath, true);
+    }
+}
+
+static void SwapDirectories(String newDir, String curDir, String retireDir)
+{
+    CopyIntoDirectory(curDir, retireDir);
+    Directory.Delete(curDir);
+    CopyIntoDirectory(newDir, curDir);
 }
 
 static void Main(string[] args)
@@ -89,13 +111,13 @@ static void Main(string[] args)
         switch (input)
         {
             case "n":
-                Console.WriteLine("Input backup name");
+                Console.WriteLine("Input backup name to create");
                 String newName = Console.ReadLine();
-                foreach (String bp in binBackupPaths)
+                for (int i = 0; i <= binPaths.Count; i++)
                 {
-                    String np = bp + "bin_" + newName;
+                    String np = binBackupPaths[i] + "bin_" + newName;
                     Directory.CreateDirectory(binBackupPaths + newName);
-                    throw new NotImplementedException();
+                    CopyIntoDirectory(np, binPaths[i]);
                 }
                 break;
             case "d":
@@ -108,7 +130,18 @@ static void Main(string[] args)
                 }
                 break;
             case "s":
-                throw new NotImplementedException();
+                Console.WriteLine("Input backup name to swap");
+                String swapName = Console.ReadLine();
+                Console.WriteLine("Input name to save current directory");
+                String retireName = Console.ReadLine();
+
+                for (int i = 0; i <= binPaths.Count; i++)
+                {
+                    String sp = binBackupPaths[i] + "bin_" + swapName;
+                    String np = binBackupPaths[i] + "bin_" + retireName;
+                    Directory.CreateDirectory(binBackupPaths + retireName);
+                    SwapDirectories(sp, binPaths[i], np);
+                }
                 break;
             case "x":
                 Environment.Exit(0);
