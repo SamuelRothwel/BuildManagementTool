@@ -49,10 +49,11 @@ namespace program
         static List<String> ExistingBinBuilds(String backupPath)
         {
             List<String> output = new List<string>();
-            string[] Directories = Directory.GetDirectories(backupPath);
-            foreach (string Dir in Directories)
+            string[] directories = Directory.GetDirectories(backupPath);
+            foreach (string dir in directories)
             {
-                output.Add(Dir);
+                String[] split = dir.Split(@"\");
+                output.Add(split[split.Count() - 1]);
             }
 
             return output;
