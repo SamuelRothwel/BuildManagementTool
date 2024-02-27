@@ -34,7 +34,7 @@ namespace program
             foreach (String bp in binPaths)
             {
                 bp.Remove(4);
-                String newDir = bp + "ExtraBinBuilds";
+                String newDir = bp + ".mm.Backups";
 
                 if (!Directory.Exists(newDir))
                 {
